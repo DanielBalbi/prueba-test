@@ -5,8 +5,11 @@ name: Maven Package
 
 on:
   push:
-  release:
-    types: [created]
+    branches:
+      - main  # Cambia "main" al nombre de tu rama principal si es diferente
+  pull_request:
+    branches:
+      - main  # Cambia "main" al nombre de tu rama principal si es diferente
 
 jobs:
   build:
@@ -26,5 +29,12 @@ jobs:
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
+    - name: Configurar Chrome
+      run: |
+        wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+        echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+        sudo apt-get update
+        sudo apt-get install google-chrome-stable
+        
     - name: Build with Maven
       run: mvn -B package --file pom.xml
